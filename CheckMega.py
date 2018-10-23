@@ -44,10 +44,9 @@ with open('d_megasc.htm', 'r', encoding="utf8", errors='ignore') as arq:
 apostas = apostas_json["apostas"]
 sorteios = apostas_json["sorteios"]
 nr_acertos = []
-for n in range(len(sorteios)):
+for n in range(len(apostas)):
     nr_acertos.append(0)
 nr_apostas = len(apostas)
-
 encerrou = False
 
 rawh = BeautifulSoup(read_htm, 'html.parser')
@@ -58,9 +57,8 @@ for row in rows[:]:
     if(first_td is not None):
       if(first_td.text.isnumeric()):
           nr_sorteio = int(first_td.text)
-          if(nr_sorteio > sorteios[len(sorteios)-1]):
+          if(nr_sorteio >= sorteios[len(sorteios)-1]):
               encerrou = True
-              break
           tamu_dentro = False
           for sorteio in sorteios[:]:
               if(nr_sorteio == sorteio):
@@ -77,13 +75,13 @@ for row in rows[:]:
                 for aposta in range(nr_apostas):
                     for d in range(len(apostas[aposta])):
                         if(dezena_int == apostas[aposta][d]):
-                            nr_acertos[aposta] += 1
+                            nr_acertos[aposta-1] += 1
             for aposta in range(nr_apostas):
-                if(nr_acertos[aposta] == 4):
+                if(nr_acertos[aposta-1] == 4):
                     send_email('QUADRA !', 'ACERTOU NO SORTEO ' + str(nr_sorteio))
-                elif(nr_acertos[aposta] == 5):
+                elif(nr_acertos[aposta-1] == 5):
                     send_email('QUINA !!', 'ACERTOU NO SORTEIO ' + str(nr_sorteio))
-                elif(nr_acertos[aposta] == 6):
+                elif(nr_acertos[aposta-1] == 6):
                     send_email('SENA !!!', 'ACERTOU NO SORTEIO ' + str(nr_sorteio))
 
 if(encerrou):
