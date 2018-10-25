@@ -3,12 +3,20 @@ from bs4 import BeautifulSoup
 import requests
 import zipfile
 
-url = 'http://www1.caixa.gov.br/loterias/_arquivos/loterias/D_mgsasc.zip'
-z = requests.get(url)
-open('D_mgsasc.zip', 'wb').write(z.content)
+done = False
+retries = 5
+while(retries > 0 and not done):
+    try:
+        url = 'http://www1.caixa.gov.br/loterias/_arquivos/loterias/D_mgsasc.zip'
+        z = requests.get(url)
+        open('D_mgsasc.zip', 'wb').write(z.content)
 
-zipfile.ZipFile('D_mgsasc.zip').extractall()
-
+        zipfile.ZipFile('D_mgsasc.zip').extractall()
+        done = True
+    except:
+        retries -= 1
+if(not done):
+    sys.exit("Falhou o download")
 
 def send_email(subject, body):
     import smtplib
